@@ -725,6 +725,16 @@ body.ui-mobile #btnViewMode{padding:0 8px}
   font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word;background:#fff;color:var(--ink)}
 .pastebox:focus{outline:none;border-color:var(--accent-line)}
 .pastebox:empty:before{content:attr(data-ph);color:var(--muted);white-space:pre-wrap}
+.mkrules{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.mkrow{display:flex;align-items:center;gap:6px;min-width:0}
+.mkrow input[type=text]{flex:0 0 58px;width:58px;height:30px;padding:0 6px;text-align:center;font-size:13px}
+.mkrow .mktil{flex:0 0 auto;color:var(--faint);font-size:12px}
+.mkrow select{flex:0 0 72px;width:72px;height:30px;font-size:12px;padding:0 22px 0 8px}
+.mkrow .mkshow{display:flex;align-items:center;gap:4px;flex:1 1 auto;min-width:0;font-size:11.5px;color:var(--muted);white-space:nowrap;cursor:pointer}
+.mkrow .mkshow input{accent-color:var(--accent-line)}
+.mkrules .empty{font-size:11.5px;color:var(--muted);padding:10px;border:1px dashed var(--line);border-radius:8px;text-align:center;line-height:1.6}
+.mkadd{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mkquick{display:flex;gap:4px;flex-wrap:wrap}
 .pcrow{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line)}
 .pcrow:last-child{border-bottom:none}
 .pcchip{flex:0 0 auto;width:18px;height:18px;border-radius:5px;border:1px solid rgba(0,0,0,.14)}
@@ -945,13 +955,32 @@ body.ui-mobile .blk textarea{font-size:16px}
           </details>
 
           <details class="sec" data-sec="marks">
-          <summary><span class="sec-t">지문 규칙</span><span class="sec-d">어떤 기호 안을 행동 지문으로 읽을지, 대사와 한 줄에 섞였을 때 나눌지.</span></summary>
+          <summary><span class="sec-t">지문 규칙</span><span class="sec-d">어떤 기호 사이를 지문·대사로 읽을지 직접 정하고, 한 줄에 섞였을 때 나눌지.</span></summary>
           <div class="sec-body">
-          <p class="hint">맨 아래 괄호 규칙은 대사 속 일반 괄호까지 물들어 기본은 꺼짐.</p>
-          <label class="check"><input type="checkbox" id="mkParenStar" checked> <code>*(괄호)*</code> 안을 지문으로</label>
-          <label class="check"><input type="checkbox" id="mkStar" checked> <code>*별표*</code> 안을 지문으로</label>
-          <label class="check"><input type="checkbox" id="mkQuote"> <code>"따옴표"</code> 밖을 전부 지문으로</label>
-          <label class="check"><input type="checkbox" id="mkParen"> <code>(괄호)</code> 안을 지문으로</label>
+          <p class="hint">여는 기호와 닫는 기호를 적고, 그 사이를 <b>지문</b>으로 볼지 <b>대사</b>로 볼지 고릅니다.<br>
+          · 두 기호가 같아도 됩니다. 예: <code>*</code> ~ <code>*</code><br>
+          · 여러 글자도 됩니다. 예: <code>((</code> ~ <code>))</code><br>
+          · <b>기호 표시</b>를 끄면 그림에는 안의 글만 남습니다.</p>
+          <div id="mkRules" class="mkrules"></div>
+          <div class="mkadd">
+            <button class="btn sm" id="mkAdd">+ 규칙 추가</button>
+            <span class="mkquick" id="mkQuick">
+              <button class="mini wide" data-mkq="( ) action">( )</button>
+              <button class="mini wide" data-mkq="[ ] action">[ ]</button>
+              <button class="mini wide" data-mkq="* * action">* *</button>
+              <button class="mini wide" data-mkq="&quot; &quot; talk">" "</button>
+              <button class="mini wide" data-mkq="「 」 talk">「 」</button>
+            </span>
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label>기호 밖의 나머지 글</label>
+            <select id="mkRest">
+              <option value="auto">자동 — 대사 규칙이 있으면 지문, 없으면 대사</option>
+              <option value="talk">늘 대사로</option>
+              <option value="action">늘 지문으로</option>
+            </select>
+          </div>
+          <p class="hint">대사 탭의 <b>지문</b> 버튼은 첫 번째 지문 규칙의 기호로 감쌉니다. 지문 규칙이 없으면 <code>*(내용)*</code>으로 감싸며, 이 표기는 규칙과 상관없이 늘 지문으로 읽습니다.</p>
           <div class="field" style="margin-top:12px">
             <label>지문과 대사가 한 줄에 섞였을 때</label>
             <select id="actionMode">
@@ -959,7 +988,7 @@ body.ui-mobile .blk textarea{font-size:16px}
               <option value="split">줄을 바꿔 따로 나누기</option>
             </select>
           </div>
-          <p class="hint">예: <code>*창밖을 보며* 눈이 오려나.</code><br>
+          <p class="hint">예: <code>(창밖을 보며) 눈이 오려나.</code> — <code>( )</code>를 지문 규칙으로 둔 경우<br>
           · 이어 쓰기 — <i>창밖을 보며</i> 눈이 오려나.<br>
           · 나누기 — <i>창밖을 보며</i> ↵ 눈이 오려나. (두 문단)<br>
           지문과 대사를 애초에 다른 줄에 썼다면 차이가 없습니다.<br>
@@ -1409,7 +1438,7 @@ body.ui-mobile .blk textarea{font-size:16px}
     <label class="check"><input type="checkbox" id="pasteReplace"> 기존 대사 지우고 새로 채우기</label>
     <div class="field"><label>내용</label>
       <div id="pasteText" class="pastebox" contenteditable="true" spellcheck="false"
-           data-ph="화자 1: *창밖을 보며* 오늘은 눈이 오려나.&#10;화자 2: 우산 챙겨야겠네."></div>
+           data-ph="화자 1: (창밖을 보며) 오늘은 눈이 오려나.&#10;화자 2: 우산 챙겨야겠네."></div>
     </div>
     <div id="pasteColorWrap" hidden>
       <label class="lbl" style="margin-bottom:6px">붙여넣은 글자색 배정</label>
@@ -1663,7 +1692,7 @@ const DEFAULT_STATE = () => ({
   frame: 'none', frameColor: '#E9E7EC', frameTitle: '', frameHtml: '', frameOnTop: false, frameEls: {},
   frameAsk: 'ask', frameVar: {}, frameText: {}, frameImg: {},
   frameChoiceText: '그에게 다가간다\n그냥 지나친다',
-  marks: { parenStar:true, star:true, paren:false, quote:false },
+  marks: { rules:[], rest:'auto' },
   actionMode: 'inline',
   ratio: 'auto', ratioW: 2, ratioH: 3,
   usePageNo: false, useDocTitle: false, useStamp: false,
@@ -1682,7 +1711,7 @@ const DEFAULT_STATE = () => ({
     {id:'s2', name:'화자2', align:'right', avatar:null, ...AUTO_COLORS[0]}
   ],
   blocks: [
-    {id:'b1', type:'line', speakerId:'s1', text:'*창밖으로 시선을 옮기며*\n오늘은 눈이 오려나.', image:null},
+    {id:'b1', type:'line', speakerId:'s1', text:'*(창밖으로 시선을 옮기며)*\n오늘은 눈이 오려나.', image:null},
     {id:'b2', type:'line', speakerId:'s2', text:'우산은 **두 개** 챙겼어.', image:null},
     {id:'b3', type:'rule', line:'solid', sym:'✦', color:'#9A93A5', width:70, thick:1, symSize:100},
     {id:'b4', type:'line', speakerId:'', text:'그리고 첫눈이 내렸다.', image:null}
@@ -1723,19 +1752,51 @@ function toast(msg){
 
 /* ---------------- inline parser ----------------
    한 번의 스캔으로 우선순위대로 마커를 잡는다.
-   ** 굵게 · == 형광 · _ 기울임 · *( )* / * * / ( ) 지문 · " " 대사
+   ** 굵게 · == 형광 · [[ ]] 크기 · *( )* 지문(고정) · 사용자 규칙 · _ 기울임
+   사용자 규칙은 여는·닫는 기호 사이를 지문(action) 또는 대사(quote)로 읽는다.
 ------------------------------------------------- */
+const reEsc = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+/* 예전 설정의 켜고 끄는 지문 규칙을 사용자 규칙으로 옮긴다 */
+function normMarks(m){
+  if (m && Array.isArray(m.rules)){
+    return {
+      rules: m.rules.filter(r => r && typeof r.open === 'string' && typeof r.close === 'string')
+        .map(r => ({open:r.open, close:r.close, kind:r.kind === 'talk' ? 'talk' : 'action', show:!!r.show})),
+      rest: ['talk', 'action'].includes(m.rest) ? m.rest : 'auto'
+    };
+  }
+  const rules = [];
+  if (m){
+    if (m.star) rules.push({open:'*', close:'*', kind:'action', show:false});
+    if (m.paren) rules.push({open:'(', close:')', kind:'action', show:false});
+    if (m.quote) rules.push({open:'"', close:'"', kind:'talk', show:true}, {open:'\u201C', close:'\u201D', kind:'talk', show:true});
+  }
+  return {rules, rest:'auto'};
+}
+function activeRules(marks){
+  return ((marks && marks.rules) || []).filter(r => r.open && r.close);
+}
+function restKind(marks){
+  const rest = (marks && marks.rest) || 'auto';
+  if (rest !== 'auto') return rest;
+  return activeRules(marks).some(r => r.kind === 'talk') ? 'action' : 'talk';
+}
 function buildRules(marks, allowAction){
   const r = [
     {type:'bold',   re:/\*\*([^*\n]+?)\*\*/y},
     {type:'mark',   re:/==([^=\n]+?)==/y},
     {type:'size',   re:/\[\[(\d{2,3}:[^\]\n]+?)\]\]/y},
   ];
-  if (allowAction && marks.parenStar !== false) r.push({type:'action', re:/\*\(([^)\n]+?)\)\*/y});
-  if (allowAction && marks.star)  r.push({type:'action', re:/\*(?=\S)((?:[^*\n]|\*\*)*?[^\s*])\*(?!\*)/y});
+  if (allowAction) r.push({type:'action', re:/\*\(([^)\n]+?)\)\*/y});
+  /* 긴 기호부터 본다. (( )) 가 ( ) 보다 먼저 잡혀야 한다 */
+  activeRules(marks).slice().sort((a, b) => b.open.length - a.open.length).forEach(u => {
+    if (u.kind === 'action' && !allowAction) return;
+    const o = reEsc(u.open), c = reEsc(u.close);
+    /* 닫는 기호를 만나기 전까지 읽되, 안에 든 **굵게** 는 통째로 건너뛴다 (* * 규칙이 굵게에 끊기지 않게) */
+    r.push({type:u.kind === 'talk' ? 'quote' : 'action', open:u.open, close:u.close, show:u.show,
+      re:new RegExp(o + '((?:\\*\\*[^*\\n]+?\\*\\*|(?!' + c + ')[^\\n])+)' + c, 'y')});
+  });
   r.push({type:'italic', re:/_([^_\n]+?)_/y});
-  if (allowAction && marks.paren) r.push({type:'action', re:/\(([^()\n]+?)\)/y});
-  if (marks.quote) r.push({type:'quote', re:/[“"]([^”"\n]*?)[”"]/y});
   return r;
 }
 function parseInline(src, marks, allowAction = true, depth = 0){
@@ -1747,7 +1808,7 @@ function parseInline(src, marks, allowAction = true, depth = 0){
     for (const r of rules){
       r.re.lastIndex = i;
       const m = r.re.exec(src);
-      if (m && m.index === i){ hit = {type:r.type, m}; break; }
+      if (m && m.index === i){ hit = {type:r.type, m, rule:r}; break; }
     }
     if (hit && depth < 5){
       flush();
@@ -1762,14 +1823,16 @@ function parseInline(src, marks, allowAction = true, depth = 0){
         if (sm){ color = sm[1]; inner = sm[2]; }
       }
       const childAction = hit.type === 'action' ? false : allowAction;
-      out.push({type:hit.type, kids:parseInline(inner, marks, childAction, depth + 1), raw:hit.m[0], color:color});
+      const node = {type:hit.type, kids:parseInline(inner, marks, childAction, depth + 1), raw:hit.m[0], color:color};
+      if (hit.rule.open != null){ node.open = hit.rule.open; node.close = hit.rule.close; node.show = hit.rule.show; }
+      out.push(node);
       i += hit.m[0].length;
     } else { buf += src[i]; i++; }
   }
   flush();
   return out;
 }
-/* "따옴표 밖은 전부 지문" 모드 */
+/* 기호 밖 나머지 글을 지문으로 읽는 경우 */
 function invertQuotes(nodes){
   return nodes.map(n => {
     if (n.type === 'quote') return n;
@@ -1780,8 +1843,9 @@ function invertQuotes(nodes){
 function isActionNode(n){ return n.type === 'action'; }
 function nodeText(n){
   if (n.type === 'text') return n.text;
-  if (n.type === 'quote' && n.raw) return n.raw;
-  return (n.kids || []).map(nodeText).join('');
+  const inner = (n.kids || []).map(nodeText).join('');
+  if (n.show && n.open != null) return n.open + inner + n.close;
+  return inner;
 }
 /* 형광 배경은 글자 하나짜리 조각으로 쪼개 칠한다.
    여러 줄에 걸친 인라인 요소의 배경을 html2canvas가 줄별로 못 그리고
@@ -1812,8 +1876,8 @@ function nodesToHtml(nodes, c, markBg){
       case 'mark':   return '<mark style="background:none;color:inherit">' + inner + '</mark>';
       case 'size':   return '<span style="font-size:' + clamp(Number(n.color) || 100, 50, 300) + '%;line-height:1.25">' + inner + '</span>';
       case 'action': return '<span class="act" style="color:' + c.action +
-        (c.actionFont ? ';font-family:' + c.actionFont : '') + '">' + inner + '</span>';
-      case 'quote':  return '<span class="dlg">' + (n.raw ? escHtml(n.raw[0]) : '"') + inner + (n.raw ? escHtml(n.raw[n.raw.length-1]) : '"') + '</span>';
+        (c.actionFont ? ';font-family:' + c.actionFont : '') + '">' + (n.show ? escHtml(n.open) : '') + inner + (n.show ? escHtml(n.close) : '') + '</span>';
+      case 'quote':  return '<span class="dlg">' + (n.show ? escHtml(n.open) : '') + inner + (n.show ? escHtml(n.close) : '') + '</span>';
       default:       return inner;
     }
   }).join('');
@@ -1827,7 +1891,7 @@ function buildParagraphs(text, colors, forceSplit){
   lines.forEach(line => {
     if (!line.trim()){ paras.push({kind:'space'}); return; }
     let nodes = parseInline(line, marks, true);
-    if (marks.quote) nodes = invertQuotes(nodes);
+    if (restKind(marks) === 'action') nodes = invertQuotes(nodes);
     /* 지문/대사 구간으로 묶기 */
     const runs = [];
     nodes.forEach(n => {
@@ -3134,7 +3198,7 @@ function renderBlocks(){
             '<button class="caret" data-markset="' + bk.id + '" title="형광펜 색과 투명도">▾</button></span>' +
           '<span class="split"><button data-size="' + bk.id + '" title="글자 크기">글자 크기</button>' +
             '<button class="caret" data-sizeset="' + bk.id + '" title="크기 고르기">▾</button></span>' +
-          '<button data-fmt="' + bk.id + '" data-a="*(" data-b=")*" title="행동 지문">지문</button>' +
+          '<button data-fmt="' + bk.id + '" data-actfmt="1" title="행동 지문 (첫 번째 지문 규칙의 기호로 감쌉니다)">지문</button>' +
           '<button data-fmt="' + bk.id + '" data-a="&quot;" data-b="&quot;" title="큰따옴표">" "</button>' +
           '<button data-strip="' + bk.id + '" title="굵게·형광·기울임만 지웁니다. 행동 지문 기호는 남습니다. 선택한 곳이 없으면 블록 전체">서식 지우기</button>' +
         '</div>' +
@@ -3237,10 +3301,8 @@ function syncControls(){
   $('#quoteOrn').value = state.quoteOrn || 'bar';
   $('#optHideNames').checked = state.hideNames;
   $('#optAligned').checked = state.alignedText;
-  $('#mkParenStar').checked = state.marks.parenStar !== false;
-  $('#mkStar').checked = state.marks.star;
-  $('#mkParen').checked = state.marks.paren;
-  $('#mkQuote').checked = state.marks.quote;
+  renderMarkRules();
+  $('#mkRest').value = state.marks.rest || 'auto';
   $('#actionMode').value = state.actionMode;
   $$('#alignSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === (state.textAlign || 'left') ? 'true' : 'false'));
   $('#modeHint').textContent = MODE_HINT[state.mode] || '';
@@ -3748,7 +3810,10 @@ $('#blockList').addEventListener('click', e => {
   const pm = e.target.closest('.pagemark');
   if (pm){ const pg = Number(pm.dataset.pg); setPageFold(pg, !foldedPages.has(pg)); return; }
   const fmt = e.target.closest('[data-fmt]');
-  if (fmt){ applyFormat(fmt.dataset.fmt, fmt.dataset.a, fmt.dataset.b); return; }
+  if (fmt){
+    const [a, b] = fmt.dataset.actfmt ? actionWrap() : [fmt.dataset.a, fmt.dataset.b];
+    applyFormat(fmt.dataset.fmt, a, b); return;
+  }
   const mset = e.target.closest('[data-markset]');
   if (mset){ openMarkPop(mset, mset.dataset.markset); return; }
   const sset = e.target.closest('[data-sizeset]');
@@ -4030,7 +4095,7 @@ function stripFormat(id){
   const s0 = whole ? 0 : ta.selectionStart;
   const e0 = whole ? ta.value.length : ta.selectionEnd;
   const v = ta.value;
-  /* 굵게·형광·기울임·크기만 걷는다. 행동 지문 기호(*내용*, *(내용)*)는 내용의 일부라 그대로 둔다. */
+  /* 굵게·형광·기울임·크기만 걷는다. 지문·대사 규칙의 기호는 내용의 일부라 그대로 둔다. */
   const cleaned = v.slice(s0, e0)
     .replace(/\*\*([^*\n]*?)\*\*/g, '$1')
     .replace(/==(?:#[0-9a-fA-F]{3,8}:)?([^=\n]*?)==/g, '$1')
@@ -4155,10 +4220,58 @@ $('#themeGrid').addEventListener('click', e => {
 const bindCheck = (sel, fn) => $(sel).addEventListener('change', e => { snapshot(); fn(e.target.checked); renderCanvas(); });
 bindCheck('#optHideNames', v => state.hideNames = v);
 bindCheck('#optAligned', v => state.alignedText = v);
-bindCheck('#mkParenStar', v => state.marks.parenStar = v);
-bindCheck('#mkStar', v => state.marks.star = v);
-bindCheck('#mkParen', v => state.marks.paren = v);
-bindCheck('#mkQuote', v => state.marks.quote = v);
+/* 사용자 지문 규칙 */
+function renderMarkRules(){
+  const list = $('#mkRules');
+  const rules = state.marks.rules || [];
+  if (!rules.length){
+    list.innerHTML = '<div class="empty">규칙이 없습니다. 모든 글을 대사로 읽습니다.<br>아래에서 규칙을 추가하세요.</div>';
+    return;
+  }
+  const opt = (v, l, cur) => '<option value="' + v + '"' + (cur === v ? ' selected' : '') + '>' + l + '</option>';
+  list.innerHTML = rules.map((r, i) =>
+    '<div class="mkrow">' +
+      '<input type="text" data-mko="' + i + '" value="' + escAttr(r.open) + '" placeholder="여는" title="여는 기호">' +
+      '<span class="mktil">~</span>' +
+      '<input type="text" data-mkc="' + i + '" value="' + escAttr(r.close) + '" placeholder="닫는" title="닫는 기호">' +
+      '<select data-mkk="' + i + '" title="기호 사이를 무엇으로 읽을지">' + opt('action', '지문', r.kind) + opt('talk', '대사', r.kind) + '</select>' +
+      '<label class="mkshow" title="그림에 기호도 남길지"><input type="checkbox" data-mks="' + i + '"' + (r.show ? ' checked' : '') + '> 기호 표시</label>' +
+      '<button class="mini danger" data-mkdel="' + i + '" title="규칙 삭제">✕</button>' +
+    '</div>').join('');
+}
+function addMarkRule(open, close, kind){
+  snapshot();
+  state.marks.rules.push({open, close, kind, show:kind === 'talk'});
+  renderMarkRules(); renderCanvas();
+}
+$('#mkAdd').addEventListener('click', () => addMarkRule('', '', 'action'));
+$('#mkQuick').addEventListener('click', e => {
+  const b = e.target.closest('[data-mkq]'); if (!b) return;
+  const [open, close, kind] = b.dataset.mkq.split(' ');
+  if (state.marks.rules.some(r => r.open === open && r.close === close)){ toast('이미 있는 규칙입니다'); return; }
+  addMarkRule(open, close, kind);
+});
+$('#mkRules').addEventListener('input', e => {
+  const t = e.target, rules = state.marks.rules;
+  if (t.dataset.mko != null){ snapshotSoon(); rules[t.dataset.mko].open = t.value; renderCanvas(); }
+  else if (t.dataset.mkc != null){ snapshotSoon(); rules[t.dataset.mkc].close = t.value; renderCanvas(); }
+});
+$('#mkRules').addEventListener('change', e => {
+  const t = e.target, rules = state.marks.rules;
+  if (t.dataset.mkk != null){ snapshot(); rules[t.dataset.mkk].kind = t.value; renderCanvas(); }
+  else if (t.dataset.mks != null){ snapshot(); rules[t.dataset.mks].show = t.checked; renderCanvas(); }
+});
+$('#mkRules').addEventListener('click', e => {
+  const b = e.target.closest('[data-mkdel]'); if (!b) return;
+  snapshot(); state.marks.rules.splice(Number(b.dataset.mkdel), 1);
+  renderMarkRules(); renderCanvas();
+});
+$('#mkRest').addEventListener('change', e => { snapshot(); state.marks.rest = e.target.value; renderCanvas(); });
+/* 지문 버튼과 색 붙여넣기가 쓸 기호: 첫 지문 규칙, 없으면 고정 표기 *( )* */
+function actionWrap(){
+  const r = activeRules(state.marks).find(x => x.kind === 'action');
+  return r ? [r.open, r.close] : ['*(', ')*'];
+}
 $('#actionMode').addEventListener('change', e => { snapshot(); state.actionMode = e.target.value; renderCanvas(); });
 $('#alignSeg').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
@@ -4774,6 +4887,7 @@ $('#pasteApply').addEventListener('click', () => {
     /* 한 줄 안에 «지문 대사 지문» 처럼 화자가 섞여 있으면 화자가 바뀌는 지점에서 블록을 나눈다.
        한 줄 = 한 블록으로 묶으면 나레이션이 엉뚱한 화자에 붙는다. */
     const SEP_ONLY = /^[\s:：\-–—]*$/;
+    const aw = actionWrap();
     lines.forEach(runs => {
       if (!runs.length || !runs.map(r => r.text).join('').trim()) return;
       const whoOf = r => ((roleOf[r.color] || {}).who) || '';
@@ -4819,7 +4933,9 @@ $('#pasteApply').addEventListener('click', () => {
           if (r.bold) t = '**' + t + '**';
           if (kindOf(r) === 'act'){
             const lead = /^\s*/.exec(t)[0], tail = /\s*$/.exec(t)[0];
-            if (t.trim()) t = lead + '*(' + t.trim() + ')*' + tail;
+            /* 안에 닫는 기호가 들어 있으면 규칙 기호로는 못 감싸므로 고정 표기로 */
+            const w = t.includes(aw[1]) ? ['*(', ')*'] : aw;
+            if (t.trim()) t = lead + w[0] + t.trim() + w[1] + tail;
           }
           parts.push(t);
         });
@@ -4873,7 +4989,7 @@ function migrate(o){
     mode: modeMap[o.renderStyle] || 'bubble',
     hideNames: !!o.hideSpeakerName,
     actionMode: o.actionSubstitute ? 'split' : 'inline',
-    marks:{parenStar:true, star:true, paren:false, quote:false},
+    marks:normMarks({star:true}),
     ratio, ratioW:Number(o.customRatioW) || 1000, ratioH:Number(o.customRatioH) || 1500,
     bgKind: o.bgImage ? 'image' : 'solid',
     bgColor: o.bgColor || '#F1F1EF', bgImage: o.bgImage || null,
@@ -4912,7 +5028,7 @@ function applyPreset(pre){
   const st = Object.assign({}, pre.style || {});
   if (st.padding !== undefined && st.padX === undefined){ st.padX = st.padding; st.padY = st.padding; }
   STYLE_KEYS.forEach(k => { if (st[k] !== undefined) state[k] = st[k]; });
-  state.marks = Object.assign({parenStar:true, star:true, paren:false, quote:false}, st.marks || {});
+  state.marks = normMarks(st.marks);
   state.narrator = migrateNarrSize(Object.assign(DEFAULT_STATE().narrator, st.narrator || {}));
   if (Array.isArray(pre.speakers) && pre.speakers.length){
     const old = state.speakers.slice();
@@ -5492,7 +5608,7 @@ renderCanvas = function(){ _renderCanvas(); autosave(); };
       const loaded = JSON.parse(saved);
       if (loaded && Array.isArray(loaded.blocks) && loaded.blocks.length){
         state = Object.assign(DEFAULT_STATE(), loaded);
-        state.marks = Object.assign({parenStar:true, star:true, paren:false, quote:false}, loaded.marks || {});
+        state.marks = normMarks(loaded.marks);
         if (loaded.padding !== undefined && loaded.padX === undefined){ state.padX = loaded.padding; state.padY = loaded.padding; }
         state.narrator = migrateNarrSize(Object.assign(DEFAULT_STATE().narrator, loaded.narrator || {}));
         setTimeout(() => toast('지난번 작업을 이어서 불러왔습니다'), 600);
