@@ -3431,7 +3431,7 @@ $$('.tab').forEach(t => t.addEventListener('click', () => {
 }));
 /* 설정 묶음은 접힌 채로 시작하고, 펼쳐 둔 것만 기억한다 */
 (() => {
-  const KEY = 'chatFormatter.secOpen';
+  const KEY = 'rpFormatter.secOpen';
   let open = {};
   try { open = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e){}
   $$('details.sec').forEach(d => {
@@ -4548,7 +4548,7 @@ function setUiMode(m, silent){
   document.body.classList.toggle('ui-mobile', m === 'mobile');
   $('#btnUiMode').textContent = m === 'mobile' ? '📱 모바일' : '🖥 PC';
   $('#btnUiMode').title = m === 'mobile' ? '모바일 배치 · 눌러서 PC 배치로' : 'PC 배치 · 눌러서 모바일 배치로';
-  try { localStorage.setItem('chatFormatter.ui', m); } catch(e){}
+  try { localStorage.setItem('rpFormatter.ui', m); } catch(e){}
   updateCollapseBtn();
   zoomAuto = true;
   setTimeout(fitZoom, 60);
@@ -4603,7 +4603,7 @@ function applyView(){
 }
 function setViewMode(m, silent){
   viewMode = m;
-  try { localStorage.setItem('chatFormatter.view', m); } catch(e){}
+  try { localStorage.setItem('rpFormatter.view', m); } catch(e){}
   applyView();
   zoomAuto = true; fitZoom();
   if (!silent) toast(m === 'paged' ? '한 장씩 넘겨 봅니다' : '이어서 스크롤합니다');
@@ -5445,12 +5445,12 @@ let panelW = 396, stageH = 0, collapsed = false;
 function setPanelW(px){
   panelW = Math.round(clamp(px, 190, Math.max(280, Math.min(780, window.innerWidth - 300))));
   document.documentElement.style.setProperty('--panel-w', panelW + 'px');
-  try { localStorage.setItem('chatFormatter.panelW', panelW); } catch(e){}
+  try { localStorage.setItem('rpFormatter.panelW', panelW); } catch(e){}
 }
 function setStageH(px){
   stageH = Math.round(clamp(px, 120, Math.max(160, window.innerHeight - 200)));
   document.documentElement.style.setProperty('--stage-h', stageH + 'px');
-  try { localStorage.setItem('chatFormatter.stageH', stageH); } catch(e){}
+  try { localStorage.setItem('rpFormatter.stageH', stageH); } catch(e){}
 }
 function updateCollapseBtn(){
   const b = $('#btnCollapse');
@@ -5528,7 +5528,7 @@ function setMat(hex){
   r.setProperty('--mat-thumb', dark ? 'rgba(255,255,255,.28)' : 'rgba(0,0,0,.22)');
   const inp = $('#matColor');
   if (inp && inp.value !== matColor) inp.value = matColor;
-  try { localStorage.setItem('chatFormatter.mat', matColor); } catch(e){}
+  try { localStorage.setItem('rpFormatter.mat', matColor); } catch(e){}
 }
 $('#matColor').addEventListener('input', e => setMat(e.target.value));
 
@@ -5582,8 +5582,9 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape'){ $('#pasteVeil').classList.remove('on'); $('#tuneVeil').classList.remove('on'); }
 });
 
-/* ---------------- autosave (복구용) ---------------- */
-const KEY = 'chatFormatter.v7';
+/* ---------------- autosave (복구용) ----------------
+   AI 채팅용 발췌기(chatFormatter.*)와 같은 도메인에 올라가므로 저장 키를 따로 쓴다 */
+const KEY = 'rpFormatter.v7';
 let saveTimer = null;
 function autosave(){
   clearTimeout(saveTimer);
@@ -5621,19 +5622,19 @@ renderCanvas = function(){ _renderCanvas(); autosave(); };
   if (state.frame === 'polaroid') migratePolaroidCaption();
   upgradeRangeRows();
   try {
-    const pw = Number(localStorage.getItem('chatFormatter.panelW'));
+    const pw = Number(localStorage.getItem('rpFormatter.panelW'));
     if (pw) setPanelW(pw);
-    const sh = Number(localStorage.getItem('chatFormatter.stageH'));
+    const sh = Number(localStorage.getItem('rpFormatter.stageH'));
     if (sh) setStageH(sh);
   } catch(e){}
   let savedMat = null;
-  try { savedMat = localStorage.getItem('chatFormatter.mat'); } catch(e){}
+  try { savedMat = localStorage.getItem('rpFormatter.mat'); } catch(e){}
   setMat(savedMat || '#43647F');
   let savedUi = null;
-  try { savedUi = localStorage.getItem('chatFormatter.ui'); } catch(e){}
+  try { savedUi = localStorage.getItem('rpFormatter.ui'); } catch(e){}
   setUiMode(savedUi || (window.innerWidth < 860 ? 'mobile' : 'desktop'), true);
   let savedView = null;
-  try { savedView = localStorage.getItem('chatFormatter.view'); } catch(e){}
+  try { savedView = localStorage.getItem('rpFormatter.view'); } catch(e){}
   viewMode = savedView === 'paged' ? 'paged' : 'scroll';
   $('#btnUndo').disabled = true;
   renderAll();
