@@ -1123,6 +1123,17 @@ body.ui-mobile .blk textarea{font-size:16px}
                 <option value="tile">타일로 반복</option>
               </select>
             </div>
+            <div class="field"><label>이미지 밖 남은 곳</label>
+              <select id="bgImgFill">
+                <option value="solid">배경색으로 채우기</option>
+                <option value="gradient">그라데이션으로 채우기</option>
+              </select>
+            </div>
+            <div class="field"><label>가장자리 흐리게</label>
+              <select id="bgFadeDir"><option value="none">없음</option><option value="bottom">아래로</option><option value="top">위로</option><option value="left">왼쪽으로</option><option value="right">오른쪽으로</option><option value="y">위아래</option><option value="x">좌우</option><option value="edge">가장자리 전체</option></select>
+            </div>
+            <div class="rangerow" id="bgFadeSizeRow" hidden><span class="lbl">흐림 길이</span><input type="range" id="bgFadeSize" min="5" max="100" value="40"><output id="bgFadeSizeOut">40%</output></div>
+            <p class="hint">흐려진 부분과 <b>전체 보이기</b>로 남은 곳에는 배경색이나 그라데이션이 비칩니다.</p>
           </div>
           <div class="rangerow"><span class="lbl">배경 덮개</span><input type="range" id="tint" min="-60" max="60" value="0"><output id="tintOut">0</output></div>
           </div>
@@ -1701,7 +1712,7 @@ const DEFAULT_STATE = () => ({
   docTitleFont: '', docTitleDeco: 'rule', docTitleEyebrow: 'CHAPTER', docTitleLs: 16,
   stampText: '', stampPos: 'bl', stampColor: '#A5A5AA', stampSize: 11, stampFont: '',
   bgKind: 'solid', bgColor: '#F1F1EF', bgColor2: '#DCE6EF', bgImage: null,
-  bgFit: 'cover', tint: 0,
+  bgFit: 'cover', tint: 0, bgImgFill: 'solid', bgFade: {dir:'none', size:40},
   bgPattern: 'none', bgPatColor: '#FFFFFF', bgPatSize: 26, bgPatOpacity: 35, bgPatSymbol: '★',
   font: "'Pretendard',sans-serif", fontSize: 16, lineHeight: 1.65, letterSpace: 0, pgap: 42, indent: 0,
   padX: 30, padY: 30, gap: 15, bubbleRadius: 18, canvasRadius: 14,
@@ -2037,7 +2048,7 @@ function buildRow(bk){
     }
     const im = document.createElement('img');
     im.className = 'cimg ish-' + (bk.imgShape || 'round');
-    im.src = bk.image;
+    im.src = fadedSrc(bk.image, bk.fadeDir, bk.fadeSize);
     im.style.width = (bk.imgW == null ? 100 : bk.imgW) + '%';
     im.style.opacity = (bk.imgOp == null ? 100 : bk.imgOp) / 100;
     row.appendChild(im);
@@ -2605,11 +2616,15 @@ function makePage(idx){
     else if (state.bgKind === 'gradient') el.style.background = 'linear-gradient(160deg,' + state.bgColor + ' 0%,' + state.bgColor2 + ' 100%)';
     else el.style.background = state.bgColor;
     if (state.bgKind === 'image' && state.bgImage){
-      el.style.backgroundImage = 'url(' + state.bgImage + ')';
+      /* 이미지 아래에 그라데이션을 한 겹 더 깔아, 이미지가 안 덮는 곳과 흐려진 가장자리에 비치게 한다 */
+      const under = bgUnderCss();
+      const fd = state.bgFade || {};
+      el.style.backgroundImage = 'url(' + fadedSrc(state.bgImage, fd.dir, fd.size) + ')' + (under ? ',' + under : '');
       const fit = state.bgFit || 'cover';
-      el.style.backgroundSize = fit === 'tile' ? 'auto' : fit;
-      el.style.backgroundRepeat = fit === 'tile' ? 'repeat' : 'no-repeat';
-      el.style.backgroundPosition = fit === 'tile' ? 'top left' : 'center';
+      const ex = under ? ',100% 100%' : '', exr = under ? ',no-repeat' : '', exp = under ? ',center' : '';
+      el.style.backgroundSize = (fit === 'tile' ? 'auto' : fit) + ex;
+      el.style.backgroundRepeat = (fit === 'tile' ? 'repeat' : 'no-repeat') + exr;
+      el.style.backgroundPosition = (fit === 'tile' ? 'top left' : 'center') + exp;
     }
   };
   /* 배경 위에 덧씌우는 패턴 층 */
@@ -3255,6 +3270,13 @@ function imgOptsHtml(bk){
     '</div>' +
     '<div class="rangerow"><span class="lbl">크기</span><input type="range" min="10" max="100" value="' + w + '" data-iw="' + bk.id + '"><output>' + w + '%</output></div>' +
     '<div class="rangerow"><span class="lbl">투명도</span><input type="range" min="10" max="100" value="' + op + '" data-iop="' + bk.id + '"><output>' + op + '%</output></div>' +
+    '<div class="row2">' +
+      '<select data-ifd="' + bk.id + '" title="가장자리 흐리게">' +
+        FADE_DIRS.map(([v,l]) => '<option value="' + v + '"' + ((bk.fadeDir || 'none') === v ? ' selected' : '') + '>' + (v === 'none' ? '흐리게 없음' : '흐리게: ' + l) + '</option>').join('') +
+      '</select>' +
+    '</div>' +
+    ((bk.fadeDir || 'none') === 'none' ? '' :
+      '<div class="rangerow"><span class="lbl">흐림 길이</span><input type="range" min="5" max="100" value="' + (bk.fadeSize || 40) + '" data-ifs="' + bk.id + '"><output>' + (bk.fadeSize || 40) + '%</output></div>') +
     '<div class="bleeds">' +
       '<label class="check"><input type="checkbox" data-ibx="' + bk.id + '"' + (bk.bleedX ? ' checked' : '') + '> 좌우 끝까지 채우기</label>' +
       '<label class="check"><input type="checkbox" data-ibt="' + bk.id + '"' + (bk.bleedT ? ' checked' : '') + '> 쪽 맨 위면 위쪽 끝까지</label>' +
@@ -3387,8 +3409,13 @@ function syncControls(){
   $('#bgColor').value = state.bgColor;
   $('#bgColor2').value = state.bgColor2;
   $('#bgFit').value = state.bgFit || 'cover';
-  $('#bgColor2Wrap').hidden = state.bgKind !== 'gradient';
+  $('#bgColor2Wrap').hidden = !needColor2();
   $('#bgImageWrap').hidden = state.bgKind !== 'image';
+  $('#bgImgFill').value = state.bgImgFill || 'solid';
+  $('#bgFadeDir').value = (state.bgFade || {}).dir || 'none';
+  $('#bgFadeSize').value = (state.bgFade || {}).size || 40;
+  $('#bgFadeSizeOut').value = ((state.bgFade || {}).size || 40) + '%';
+  $('#bgFadeSizeRow').hidden = ((state.bgFade || {}).dir || 'none') === 'none';
   $('#bgSolid').hidden = state.bgKind === 'none';
   fillSelect($('#bgPattern'), BG_PATTERNS, state.bgPattern || 'none');
   $('#bgPatWrap').hidden = state.bgKind === 'none';
@@ -3597,6 +3624,10 @@ $('#blockList').addEventListener('input', e => {
       if (el.dataset.rz){ b.symSize = v; if (out) out.value = v + '%'; }
       renderCanvas();
     }
+  } else if (el.dataset.ifs){
+    const o = el.closest('.rangerow').querySelector('.numin, output'); if (o) o.value = el.value + '%';
+    const b = state.blocks.find(x => x.id === el.dataset.ifs), v = Number(el.value);
+    if (b) fadeSoon(() => { snapshot(); b.fadeSize = v; renderCanvas(); });
   } else if (el.dataset.iw || el.dataset.iop){
     const id = el.dataset.iw || el.dataset.iop;
     const b = state.blocks.find(x => x.id === id);
@@ -3673,6 +3704,9 @@ $('#blockList').addEventListener('change', e => {
       if (wasCircle || el.value === 'circle') reprocessBlockImage(b);
       else { renderBlocks(); renderCanvas(); }
     }
+  } else if (el.dataset.ifd){
+    const b = state.blocks.find(x => x.id === el.dataset.ifd);
+    if (b){ snapshot(); b.fadeDir = el.value; if (!b.fadeSize) b.fadeSize = 40; renderBlocks(); renderCanvas(); }
   } else if (el.dataset.ial){
     const b = state.blocks.find(x => x.id === el.dataset.ial);
     if (b){ snapshot(); b.imgAlign = el.value; renderCanvas(); }
@@ -3853,6 +3887,77 @@ $('#blockList').addEventListener('click', e => {
 /* ---------------- 이미지 준비 ---------------- */
 const IMG_SHAPES = [['round','둥근 사각'],['rect','사각'],['soft','많이 둥근'],['pill','알약'],['circle','원형']];
 const IMG_ALIGNS = [['','기본 (글 정렬 따라)'],['left','왼쪽'],['center','가운데'],['right','오른쪽'],['full','좌우 꽉 채움']];
+
+/* ---------------- 가장자리 흐리게 ----------------
+   html2canvas 가 mask-image 를 못 그리므로, 흐림을 이미지 픽셀(알파)에 직접 구워 넣는다.
+   구운 결과는 캐시하고, 처음 구울 동안은 원본을 보여 준 뒤 다 되면 다시 그린다. */
+const fadeCache = new Map();
+function fadeKey(src, dir, size){ return dir + ':' + size + ':' + src.length + ':' + src.slice(-48); }
+function getFaded(src, dir, size){
+  const k = fadeKey(src, dir, size);
+  let e = fadeCache.get(k);
+  if (!e){
+    e = {url:null, p:null};
+    e.p = bakeFade(src, dir, size).then(u => { e.url = u; return u; }, () => { e.url = src; return src; });
+    fadeCache.set(k, e);
+    /* 슬라이더를 오가며 쌓이는 옛 결과는 버린다 */
+    while (fadeCache.size > 16) fadeCache.delete(fadeCache.keys().next().value);
+  }
+  return e;
+}
+function fadedSrc(src, dir, size){
+  if (!src || !dir || dir === 'none') return src;
+  const e = getFaded(src, dir, clamp(Number(size) || 40, 5, 100));
+  if (e.url) return e.url;
+  e.p.then(() => renderCanvas());
+  return src;
+}
+async function fadedSrcAsync(src, dir, size){
+  if (!src || !dir || dir === 'none') return src;
+  return getFaded(src, dir, clamp(Number(size) || 40, 5, 100)).p;
+}
+async function bakeFade(src, dir, size){
+  const img = await loadImg(src);
+  const w = img.naturalWidth, h = img.naturalHeight;
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  const g = cv.getContext('2d');
+  g.drawImage(img, 0, 0);
+  g.globalCompositeOperation = 'destination-in';
+  /* 한 축을 따라 양 끝을 흐린다. a·b 는 시작·끝 쪽 흐림 길이(0~1) */
+  const axis = (horiz, a, b) => {
+    const L = horiz ? w : h;
+    const gr = horiz ? g.createLinearGradient(0, 0, w, 0) : g.createLinearGradient(0, 0, 0, h);
+    const ease = t => t * t * (3 - 2 * t);
+    const stops = [];
+    for (let i = 0; i <= 10; i++){
+      const t = i / 10;
+      if (a > 0) stops.push([a * t, ease(t)]);
+      if (b > 0) stops.push([1 - b * t, ease(t)]);
+    }
+    if (!(a > 0)) stops.push([0, 1]);
+    if (!(b > 0)) stops.push([1, 1]);
+    stops.sort((x, y) => x[0] - y[0]).forEach(([o, al]) => gr.addColorStop(clamp(o, 0, 1), 'rgba(0,0,0,' + al.toFixed(3) + ')'));
+    g.fillStyle = gr;
+    g.fillRect(0, 0, w, h);
+    return L;
+  };
+  const f = size / 100, half = Math.min(f, .5);
+  if (dir === 'bottom') axis(false, 0, f);
+  else if (dir === 'top') axis(false, f, 0);
+  else if (dir === 'left') axis(true, f, 0);
+  else if (dir === 'right') axis(true, 0, f);
+  else if (dir === 'y') axis(false, half, half);
+  else if (dir === 'x') axis(true, half, half);
+  else if (dir === 'edge'){ axis(true, half, half); axis(false, half, half); }
+  return cv.toDataURL('image/png');
+}
+/* 배경 이미지 아래에 깔 그라데이션 (단색이면 배경색이 그대로 비치므로 없음) */
+function bgUnderCss(){
+  if (state.bgImgFill !== 'gradient') return '';
+  return 'linear-gradient(160deg,' + state.bgColor + ' 0%,' + state.bgColor2 + ' 100%)';
+}
+const FADE_DIRS = [['none','없음'],['bottom','아래로'],['top','위로'],['left','왼쪽으로'],['right','오른쪽으로'],['y','위아래'],['x','좌우'],['edge','가장자리 전체']];
 
 function loadImg(src){
   return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
@@ -4490,9 +4595,20 @@ $('#ratioW').addEventListener('input', e => { state.ratioW = Number(e.target.val
 $('#ratioH').addEventListener('input', e => { state.ratioH = Number(e.target.value) || 1500; renderCanvas(); });
 $('#bgKind').addEventListener('change', e => {
   snapshot(); state.bgKind = e.target.value;
-  $('#bgColor2Wrap').hidden = state.bgKind !== 'gradient';
-  $('#bgImageWrap').hidden = state.bgKind !== 'image';
-  renderCanvas();
+  syncControls(); renderCanvas();
+});
+function needColor2(){ return state.bgKind === 'gradient' || (state.bgKind === 'image' && state.bgImgFill === 'gradient'); }
+$('#bgImgFill').addEventListener('change', e => { snapshot(); state.bgImgFill = e.target.value; syncControls(); renderCanvas(); });
+$('#bgFadeDir').addEventListener('change', e => {
+  snapshot(); state.bgFade = Object.assign({size:40}, state.bgFade, {dir:e.target.value}); syncControls(); renderCanvas();
+});
+/* 흐림은 이미지를 새로 구워야 해서, 슬라이더가 멈춘 뒤에 적용한다 */
+let fadeTimer = null;
+const fadeSoon = fn => { clearTimeout(fadeTimer); fadeTimer = setTimeout(fn, 220); };
+$('#bgFadeSize').addEventListener('input', e => {
+  const v = Number(e.target.value);
+  $('#bgFadeSizeOut').value = v + '%';
+  fadeSoon(() => { snapshot(); state.bgFade = Object.assign({dir:'none'}, state.bgFade, {size:v}); renderCanvas(); });
 });
 $('#bubShape').addEventListener('change', e => { snapshot(); state.bubbleShape = e.target.value; renderCanvas(); });
 $('#bubShadow').addEventListener('change', e => { snapshot(); state.bubbleShadow = e.target.value === '1'; renderCanvas(); });
@@ -5012,7 +5128,7 @@ function migrate(o){
 const STYLE_KEYS = ['mode','theme','textAlign','hideNames','alignedText','wrapQuote','nameSep','quoteOrn','markColor','markAlpha','marks','actionMode',
   'ratio','ratioW','ratioH','usePageNo','useDocTitle','useStamp','pageNo','pageNoPos','pageNoColor','pageNoSize',
   'docTitle','docTitleAlign','docTitleWhere','docTitleColor','docTitleSize','docTitleFont','docTitleDeco','docTitleEyebrow','docTitleLs',
-  'stampText','stampPos','stampColor','stampSize','stampFont','bgKind','bgColor','bgColor2','bgImage','bgFit','tint',
+  'stampText','stampPos','stampColor','stampSize','stampFont','bgKind','bgColor','bgColor2','bgImage','bgFit','tint','bgImgFill','bgFade',
   'bgPattern','bgPatColor','bgPatSize','bgPatOpacity','bgPatSymbol','frame','frameColor','frameTitle','frameHtml','frameOnTop','frameEls','frameChoiceText','frameAsk','frameVar','frameText','frameImg',
   'font','fontSize','lineHeight','letterSpace','pgap','indent','padX','padY','gap','narrator',
   'bubbleWidth','bubblePad','bubbleShape','bubbleShadow','bubbleRadius','canvasRadius','exportW','exportMode','exportPages'];
@@ -5094,7 +5210,8 @@ async function swapBgForCapture(pages, scale){
   bgTooSmall = 0;
   if (state.bgKind !== 'image' || !state.bgImage) return null;
   let img;
-  try { img = await loadImg(state.bgImage); } catch(e){ return null; }
+  const fd = state.bgFade || {};
+  try { img = await loadImg(await fadedSrcAsync(state.bgImage, fd.dir, fd.size)); } catch(e){ return null; }
   const fit = state.bgFit || 'cover';
   const saved = [];
   for (const pg of pages){
@@ -5125,8 +5242,11 @@ async function swapBgForCapture(pages, scale){
     layer.className = 'capbg';
     layer.src = cv.toDataURL('image/png');
     layer.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none';
-    saved.push({host, image: host.style.backgroundImage, first: host.firstChild, layer});
-    host.style.backgroundImage = 'none';
+    saved.push({host, image: host.style.backgroundImage, size: host.style.backgroundSize, repeat: host.style.backgroundRepeat, first: host.firstChild, layer});
+    /* 이미지 밖·흐린 곳에 비치던 그라데이션은 남겨 둔다 */
+    host.style.backgroundImage = bgUnderCss() || 'none';
+    host.style.backgroundSize = '100% 100%';
+    host.style.backgroundRepeat = 'no-repeat';
     host.insertBefore(layer, host.firstChild);
   }
   return saved;
@@ -5136,6 +5256,8 @@ function restoreBg(saved){
   saved.forEach(o => {
     if (o.layer && o.layer.parentNode) o.layer.parentNode.removeChild(o.layer);
     o.host.style.backgroundImage = o.image;
+    o.host.style.backgroundSize = o.size;
+    o.host.style.backgroundRepeat = o.repeat;
   });
 }
 async function capturePages(){
