@@ -1127,7 +1127,7 @@ body.ui-mobile .blk textarea{font-size:16px}
               <select id="bgImgFill">
                 <option value="solid">배경색으로 채우기</option>
                 <option value="gradient">그라데이션으로 채우기</option>
-                <option value="edge">사진 끝 색을 늘여 채우기</option>
+                <option value="edge">맞닿은 사진 면의 대표색으로 채우기</option>
               </select>
             </div>
             <div class="field"><label>색으로 덮기 (그라데이션)</label>
@@ -1142,7 +1142,7 @@ body.ui-mobile .blk textarea{font-size:16px}
               </div>
               <div class="rangerow"><span class="lbl">덮는 길이</span><input type="range" id="bgFadeSize" min="5" max="100" value="40"><output id="bgFadeSizeOut">40%</output></div>
             </div>
-            <p class="hint">· <b>사진 끝 색을 늘여 채우기</b> — <b>전체 보이기</b>로 남은 위아래(또는 좌우)를, 맞닿은 사진 끝줄의 색을 길게 늘여 메웁니다.<br>
+            <p class="hint">· <b>맞닿은 사진 면의 대표색</b> — <b>전체 보이기</b>로 남은 위아래(또는 좌우)를, 그 쪽에 닿은 사진 면에서 가장 많이 쓰인 색 하나로 채웁니다.<br>
             · <b>색으로 덮기</b> — 고른 방향으로 갈수록 사진이 그 색에 점점 덮입니다.</p>
           </div>
           <div class="rangerow"><span class="lbl">배경 덮개</span><input type="range" id="tint" min="-60" max="60" value="0"><output id="tintOut">0</output></div>
@@ -3997,25 +3997,43 @@ function bgUnderCss(){
   if (state.bgImgFill !== 'gradient') return '';
   return 'linear-gradient(160deg,' + state.bgColor + ' 0%,' + state.bgColor2 + ' 100%)';
 }
-/* 사진 끝 한 줄(위·아래·왼쪽·오른쪽)을 1px 띠로 잘라 둔다. 늘여 붙여 빈 곳을 메운다 */
-function edgeStrips(src){
+/* 사진의 네 면마다, 그 면에 닿은 픽셀들 중 가장 많이 나오는 색 하나를 뽑는다.
+   비슷한 색은 한 묶음으로 세고(채널당 32단계), 가장 큰 묶음의 평균색을 쓴다. */
+function edgeColors(src){
   return bakeOnce('edge:' + srcKey(src), async () => {
     const img = await loadImg(src);
     const iw = img.naturalWidth, ih = img.naturalHeight;
-    const cut = (sx, sy, sw, sh) => {
-      const cv = document.createElement('canvas');
-      cv.width = sw; cv.height = sh;
-      cv.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
-      return cv.toDataURL('image/png');
+    const cv = document.createElement('canvas');
+    cv.width = iw; cv.height = ih;
+    const g = cv.getContext('2d', {willReadFrequently:true});
+    g.drawImage(img, 0, 0);
+    const hex = n => Math.round(n).toString(16).padStart(2, '0');
+    const dominant = (x, y, w, h) => {
+      const d = g.getImageData(x, y, w, h).data;
+      const bins = new Map();
+      let best = null;
+      for (let i = 0; i < d.length; i += 4){
+        if (d[i + 3] < 128) continue;
+        const k = (d[i] >> 3) << 10 | (d[i + 1] >> 3) << 5 | (d[i + 2] >> 3);
+        let b = bins.get(k);
+        if (!b){ b = {n:0, r:0, g:0, b:0}; bins.set(k, b); }
+        b.n++; b.r += d[i]; b.g += d[i + 1]; b.b += d[i + 2];
+        if (!best || b.n > best.n) best = b;
+      }
+      return best ? '#' + hex(best.r / best.n) + hex(best.g / best.n) + hex(best.b / best.n) : '#FFFFFF';
     };
-    return JSON.stringify({iw, ih, t:cut(0, 0, iw, 1), b:cut(0, ih - 1, iw, 1), l:cut(0, 0, 1, ih), r:cut(iw - 1, 0, 1, ih)});
+    /* 맨 끝 두 줄을 본다 — 가장자리 한 줄은 압축 잡티가 끼기 쉽다 */
+    const t = Math.min(2, ih), s2 = Math.min(2, iw);
+    return JSON.stringify({iw, ih,
+      t:dominant(0, 0, iw, t), b:dominant(0, ih - t, iw, t),
+      l:dominant(0, 0, s2, ih), r:dominant(iw - s2, 0, s2, ih)});
   });
 }
-/* 배치가 끝난 뒤 쪽마다 크기를 보고, 사진이 안 덮는 쪽에 끝줄 띠를 늘여 깐다 */
+/* 배치가 끝난 뒤 쪽마다 크기를 보고, 사진이 안 덮는 쪽을 그 면의 대표색으로 채운다 */
 function applyEdgeFill(pages){
   if (state.bgKind !== 'image' || !state.bgImage || state.bgImgFill !== 'edge' || (state.bgFit || 'cover') !== 'contain') return;
   const src = bgShownSrc();
-  const e = edgeStrips(src);
+  const e = edgeColors(src);
   if (e.url == null){ e.p.then(() => renderCanvas()); return; }
   if (!e.url) return;
   const d = JSON.parse(e.url);
@@ -4025,7 +4043,8 @@ function applyEdgeFill(pages){
     if (!host || !host.offsetWidth || !host.offsetHeight) return;
     const tall = host.offsetWidth / host.offsetHeight < d.iw / d.ih;
     const a = tall ? d.t : d.l, b = tall ? d.b : d.r;
-    host.style.backgroundImage = 'url(' + src + '),url(' + a + '),url(' + b + ')';
+    const solid = c => 'linear-gradient(' + c + ',' + c + ')';
+    host.style.backgroundImage = 'url(' + src + '),' + solid(a) + ',' + solid(b);
     host.style.backgroundSize = tall ? 'contain,100% 50.5%,100% 50.5%' : 'contain,50.5% 100%,50.5% 100%';
     host.style.backgroundPosition = tall ? 'center,top,bottom' : 'center,left,right';
     host.style.backgroundRepeat = 'no-repeat,no-repeat,no-repeat';
@@ -5292,7 +5311,10 @@ async function swapBgForCapture(pages, scale){
   let img;
   try { img = await loadImg(await fadedSrcAsync(state.bgImage, state.bgFade)); } catch(e){ return null; }
   const fit = state.bgFit || 'cover';
-  const edge = fit === 'contain' && state.bgImgFill === 'edge';
+  let ec = null;
+  if (fit === 'contain' && state.bgImgFill === 'edge'){
+    try { ec = JSON.parse(await edgeColors(img.src).p); } catch(e){ ec = null; }
+  }
   const saved = [];
   for (const pg of pages){
     /* 배경을 그릴 곳은 페이지지만, 모니터처럼 화면 안쪽에만 칠하는 테두리에서는 본문 상자다 */
@@ -5315,16 +5337,11 @@ async function swapBgForCapture(pages, scale){
       if (r > 1.05) bgTooSmall = iw + '×' + ih;
       const dw = iw * r, dh = ih * r;
       const dx = Math.round((w - dw) / 2), dy = Math.round((h - dh) / 2);
-      if (edge){
-        /* 남는 위아래(좌우)에 사진 끝줄을 늘여 깐다 */
-        if (dy > 0){
-          g.drawImage(img, 0, 0, iw, 1, dx, 0, Math.round(dw), dy + 1);
-          g.drawImage(img, 0, ih - 1, iw, 1, dx, dy + Math.round(dh) - 1, Math.round(dw), h - dy - Math.round(dh) + 1);
-        }
-        if (dx > 0){
-          g.drawImage(img, 0, 0, 1, ih, 0, dy, dx + 1, Math.round(dh));
-          g.drawImage(img, iw - 1, 0, 1, ih, dx + Math.round(dw) - 1, dy, w - dx - Math.round(dw) + 1, Math.round(dh));
-        }
+      if (ec){
+        /* 남는 위아래(좌우)를 그 면의 대표색으로 칠한다 */
+        const half = (c, x, y, ww, hh) => { g.fillStyle = c; g.fillRect(x, y, ww, hh); };
+        if (dy > 0){ half(ec.t, 0, 0, w, Math.ceil(h / 2)); half(ec.b, 0, Math.floor(h / 2), w, h - Math.floor(h / 2)); }
+        else if (dx > 0){ half(ec.l, 0, 0, Math.ceil(w / 2), h); half(ec.r, Math.floor(w / 2), 0, w - Math.floor(w / 2), h); }
       }
       g.drawImage(img, dx, dy, Math.round(dw), Math.round(dh));
     }
