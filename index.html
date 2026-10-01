@@ -11,13 +11,13 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <style>
 :root{
-  --ink:#22303D; --ink2:#42566B; --muted:#7F90A1; --faint:#A9B9C8;
-  --line:#DCE9F3; --line2:#EEF5FA;
-  --panel:#FFFFFF; --shell:#EAF3FA; --field:#F6FBFE;
-  --accent:#A5D8F3; --accent-hi:#8CCBEE; --accent-ink:#0F3A57;
-  --accent-line:#63B6E6; --accent-text:#1877B5; --accent-soft:#EBF7FE;
-  --mat:#43647F; --mat2:#4E7291;
-  --mat-ink:#EAF3FA; --mat-ink2:#C3D6E6; --mat-line:rgba(255,255,255,.16); --mat-hover:rgba(255,255,255,.13);
+  --ink:#3B2A33; --ink2:#5E4552; --muted:#9A8490; --faint:#C6B2BC;
+  --line:#F2DCE5; --line2:#FAEEF3;
+  --panel:#FFFFFF; --shell:#FBEAF1; --field:#FEF6F9;
+  --accent:#F7B8CF; --accent-hi:#F3A0BF; --accent-ink:#5A1733;
+  --accent-line:#EC79A3; --accent-text:#C2346B; --accent-soft:#FDEBF2;
+  --mat:#7A5468; --mat2:#876076;
+  --mat-ink:#FBEFF4; --mat-ink2:#E6CBD8; --mat-line:rgba(255,255,255,.16); --mat-hover:rgba(255,255,255,.13);
   --mat-thumb:rgba(255,255,255,.28);
   --pine:#2F7F6F;
   --r:10px;
@@ -34,8 +34,8 @@ button{cursor:pointer;background:none;border:none}
 :focus-visible{outline:2px solid var(--accent-line);outline-offset:2px}
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#C7D8E5;border-radius:99px;border:3px solid transparent;background-clip:padding-box}
-::-webkit-scrollbar-thumb:hover{background:#AEC3D4;background-clip:padding-box;border:3px solid transparent}
+::-webkit-scrollbar-thumb{background:#E8CCD8;border-radius:99px;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:#D9AFC2;background-clip:padding-box;border:3px solid transparent}
 .stage-scroll::-webkit-scrollbar-thumb{background:var(--mat-thumb);background-clip:padding-box;border:3px solid transparent}
 
 /* ---------- shell ---------- */
@@ -47,7 +47,7 @@ button{cursor:pointer;background:none;border:none}
 .top-actions{display:flex;align-items:center;gap:7px;min-width:0;flex-wrap:wrap;justify-content:flex-end}
 .top-actions .btn{white-space:nowrap;flex:0 0 auto}
 .btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 13px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:600;color:var(--ink2);transition:.15s}
-.btn:hover{border-color:#BBD0E0;background:var(--field)}
+.btn:hover{border-color:#EBBFD0;background:var(--field)}
 .btn.accent{background:var(--accent);border-color:var(--accent-hi);color:var(--accent-ink)}
 .btn.accent:hover{background:var(--accent-hi);border-color:var(--accent-hi)}
 .btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
@@ -74,7 +74,7 @@ body.panel-hidden .panel{visibility:hidden;overflow:hidden;min-width:0;border-ri
 .tabpane{display:none;flex:1;min-height:0;flex-direction:column}
 .tabpane.on{display:flex}
 .pane-scroll{flex:1;min-height:0;min-width:0;max-width:100%;overflow-y:auto;padding:16px 14px 60px}
-.pane-bar{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:6px;padding:11px 14px;border-bottom:1px solid var(--line2);background:linear-gradient(#fff,#F8FCFE);min-width:0;max-width:100%}
+.pane-bar{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:6px;padding:11px 14px;border-bottom:1px solid var(--line2);background:linear-gradient(#fff,#FFF8FB);min-width:0;max-width:100%}
 .pane-bar .btn{white-space:nowrap;flex:0 0 auto}
 
 .eyebrow{display:flex;align-items:center;gap:8px;margin:26px 0 12px;font-family:var(--display);font-size:13px;font-weight:700;
@@ -83,7 +83,7 @@ body.panel-hidden .panel{visibility:hidden;overflow:hidden;min-width:0;border-ri
 .eyebrow::before{content:'';flex:0 0 auto;width:4px;height:15px;border-radius:99px;background:var(--accent-line)}
 .eyebrow::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--accent-line),transparent)}
 .hint{font-size:11.5px;line-height:1.6;color:var(--muted);margin:-4px 2px 12px}
-.hint code{background:#E2F0FA;border-radius:4px;padding:1px 5px;font-size:11px;color:var(--accent-text)}
+.hint code{background:#FBE1EB;border-radius:4px;padding:1px 5px;font-size:11px;color:var(--accent-text)}
 .pane-lead{margin:0 2px 12px}
 /* 설정 묶음: 접힌 채로 제목과 한두 줄 설명만, 펼치면 세부 설정 */
 .sec{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin-bottom:8px;min-width:0}
@@ -111,7 +111,7 @@ body.panel-hidden .panel{visibility:hidden;overflow:hidden;min-width:0;border-ri
 .segbar{min-width:0}
 .segbar button{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 input[type=text],input[type=number],select,textarea{width:100%;border:1px solid var(--line);background:var(--field);border-radius:8px;padding:8px 10px;font-size:13px;transition:.15s}
-select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M1 1l4 4 4-4' stroke='%237B8A99' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 10px center;padding-right:26px}
+select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M1 1l4 4 4-4' stroke='%23A8889A' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 10px center;padding-right:26px}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent-line);background:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
 textarea{resize:vertical;line-height:1.6;min-height:74px}
 input[type=range]{width:100%;accent-color:var(--accent-line);height:18px}
@@ -130,7 +130,7 @@ input[type=range]{width:100%;accent-color:var(--accent-line);height:18px}
 .swatch::-webkit-color-swatch{border:none;border-radius:5px}
 .check{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--field);font-size:12.5px;margin-bottom:7px;cursor:pointer}
 .check input{accent-color:var(--accent-line);width:15px;height:15px}
-.check code{background:#E2F0FA;border-radius:4px;padding:1px 5px;font-size:11.5px;color:var(--accent-text)}
+.check code{background:#FBE1EB;border-radius:4px;padding:1px 5px;font-size:11.5px;color:var(--accent-text)}
 
 .segbar{display:flex;background:var(--field);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
 .segbar button{flex:1;padding:7px 4px;border-radius:6px;font-size:12.5px;font-weight:600;color:var(--muted)}
@@ -139,7 +139,7 @@ input[type=range]{width:100%;accent-color:var(--accent-line);height:18px}
 
 .themes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .theme{border:1px solid var(--line);border-radius:9px;padding:7px;text-align:left;transition:.15s}
-.theme:hover{border-color:#BBD0E0}
+.theme:hover{border-color:#EBBFD0}
 .theme[aria-pressed="true"]{border-color:var(--accent-line);box-shadow:0 0 0 3px var(--accent-soft)}
 .theme .sw{height:26px;border-radius:5px;display:flex;align-items:center;gap:3px;padding:0 5px;margin-bottom:5px}
 .theme .sw i{width:12px;height:12px;border-radius:99px;display:block}
@@ -156,7 +156,7 @@ input[type=range]{width:100%;accent-color:var(--accent-line);height:18px}
 .colorrow .cc{text-align:center}
 .colorrow .cc span{display:block;font-size:10.5px;color:var(--muted);margin-top:3px}
 .colorrow input[type=color]{width:100%;height:26px;padding:0;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer}
-.narr-card{background:linear-gradient(#FFF,#F7FCFE);border-color:#CFE4F2}
+.narr-card{background:linear-gradient(#FFF,#FFF7FA);border-color:#F3D2DF}
 .narr-card .tag{flex:1;font-size:12px;font-weight:700;color:var(--accent-text);letter-spacing:.02em}
 .narr-card .rangerow output{flex:0 0 38px}
 
@@ -196,7 +196,7 @@ input[type=range]{width:100%;accent-color:var(--accent-line);height:18px}
 .pgno{flex:0 0 auto;min-width:17px;height:17px;padding:0 4px;border-radius:5px;background:var(--accent-soft);
   color:var(--accent-text);font-size:10px;font-weight:800;display:none;place-items:center}
 .pgno.on{display:grid}
-.blk.pb{background:linear-gradient(#FFF,#F4FAFD);border-style:dashed}
+.blk.pb{background:linear-gradient(#FFF,#FEF3F7);border-style:dashed}
 .blk.pb .blk-head{padding:9px}
 .blk.pb .pbl{flex:1;font-size:12.5px;color:var(--accent-text);font-weight:600;letter-spacing:.02em}
 .blk{border:1px solid var(--line);border-radius:11px;background:#fff;position:relative;transition:box-shadow .15s,opacity .15s}
@@ -232,7 +232,7 @@ input[type=range]{width:100%;accent-color:var(--accent-line);height:18px}
 .boxopts .rangerow .lbl{flex:0 0 46px;font-size:10.5px}
 .boxopts .rangerow output{flex:0 0 48px;font-size:10.5px}
 .boxopts .rangerow .numin,.imgopts .rangerow .numin{flex:0 0 58px;width:58px;font-size:10.5px;padding:4px 4px}
-.imgopts{padding:8px 9px 10px 38px;border-top:1px dashed var(--line);background:#F8FCFE}
+.imgopts{padding:8px 9px 10px 38px;border-top:1px dashed var(--line);background:#FFF8FB}
 .imgopts .row2{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
 .imgopts select{padding:5px 22px 5px 8px;font-size:11.5px}
 .imgopts .rangerow{margin-bottom:5px}
@@ -247,7 +247,7 @@ input[type=range]{width:100%;accent-color:var(--accent-line);height:18px}
 .blk-foot .boxchk{margin:0;flex:0 0 auto;font-size:11.5px;white-space:nowrap}
 .thumb{height:30px;border-radius:5px;border:1px solid var(--line)}
 .filebtn{display:inline-flex;align-items:center;height:26px;padding:0 9px;border:1px solid var(--line);border-radius:6px;font-size:11.5px;color:var(--muted);background:var(--field);cursor:pointer}
-.filebtn:hover{border-color:#BBD0E0;color:var(--ink2)}
+.filebtn:hover{border-color:#EBBFD0;color:var(--ink2)}
 .blk.rule .blk-head{padding-bottom:9px}
 .blk.rule .ruleopts{display:flex;flex-wrap:wrap;gap:7px;align-items:center;padding:0 9px 10px 38px}
 .blk.rule .ruleopts select{flex:1;min-width:96px}
@@ -269,8 +269,8 @@ input[type=range]{width:100%;accent-color:var(--accent-line);height:18px}
 .page-wrap{display:flex;flex-direction:column;align-items:center}
 .pagebox{position:relative;display:flex}
 .checker{position:absolute;inset:0;z-index:0;background-color:#fff;
-  background-image:linear-gradient(45deg,#D5E2EC 25%,transparent 25%,transparent 75%,#D5E2EC 75%),
-                   linear-gradient(45deg,#D5E2EC 25%,transparent 25%,transparent 75%,#D5E2EC 75%);
+  background-image:linear-gradient(45deg,#EEDDE5 25%,transparent 25%,transparent 75%,#EEDDE5 75%),
+                   linear-gradient(45deg,#EEDDE5 25%,transparent 25%,transparent 75%,#EEDDE5 75%);
   background-size:18px 18px;background-position:0 0,9px 9px}
 .pagebox .page{position:relative;z-index:1}
 .stage-bar{border-top:1px solid var(--mat-line);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 14px;background:var(--mat2);position:relative;z-index:2;overflow:hidden}
@@ -357,7 +357,7 @@ body.ui-mobile #btnViewMode{padding:0 8px}
 .split > button.caret{border-radius:0 7px 7px 0;margin-left:-1px;padding:0 6px;font-size:9px}
 .swatchdot{display:block;width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.16)}
 .pop{position:fixed;z-index:220;background:#fff;border:1px solid var(--line);border-radius:11px;
-  box-shadow:0 12px 30px rgba(20,40,60,.18);padding:12px;width:min(212px,calc(100vw - 24px))}
+  box-shadow:0 12px 30px rgba(60,25,42,.18);padding:12px;width:min(212px,calc(100vw - 24px))}
 .pop .r{display:flex;align-items:center;gap:9px;margin-bottom:9px}
 .pop .r:last-child{margin-bottom:0}
 .pop label{flex:1;font-size:11.5px;color:var(--muted)}
@@ -733,8 +733,19 @@ body.ui-mobile #btnViewMode{padding:0 8px}
 .mkrow .mkshow{display:flex;align-items:center;gap:4px;flex:1 1 auto;min-width:0;font-size:11.5px;color:var(--muted);white-space:nowrap;cursor:pointer}
 .mkrow .mkshow input{accent-color:var(--accent-line)}
 .mkrules .empty{font-size:11.5px;color:var(--muted);padding:10px;border:1px dashed var(--line);border-radius:8px;text-align:center;line-height:1.6}
-.mkadd{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.mkquick{display:flex;gap:4px;flex-wrap:wrap}
+.mklbl{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:12px;font-weight:700;color:var(--ink2);margin:2px 2px 8px}
+.mklbl span{font-size:11px;font-weight:500;color:var(--muted)}
+.mkquick{display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:6px;margin-bottom:16px}
+.mkchip{display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 4px 6px;border-radius:9px;border:1px solid;cursor:pointer;transition:.12s;position:relative}
+.mkchip b{font-size:14px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
+.mkchip i{font-style:normal;font-size:10.5px;font-weight:600;opacity:.8}
+.mkchip.act{background:#FBE1EB;border-color:#F3C2D5;color:#A8325F}
+.mkchip.talk{background:#ECE6FA;border-color:#D6CBF2;color:#5B45A3}
+.mkchip:hover{filter:brightness(.97)}
+.mkchip.act[aria-pressed="true"]{background:var(--accent-line);border-color:var(--accent-line);color:#fff}
+.mkchip.talk[aria-pressed="true"]{background:#8A72D6;border-color:#8A72D6;color:#fff}
+.mkchip[aria-pressed="true"]::after{content:'✓';position:absolute;top:3px;right:6px;font-size:10px;font-weight:800}
+.mkaddbtn{margin-bottom:4px}
 .pcrow{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line)}
 .pcrow:last-child{border-bottom:none}
 .pcchip{flex:0 0 auto;width:18px;height:18px;border-radius:5px;border:1px solid rgba(0,0,0,.14)}
@@ -742,7 +753,7 @@ body.ui-mobile #btnViewMode{padding:0 8px}
 .pcrow select[data-pckind]{flex:0 0 70px;height:30px;font-size:12px}
 .pcrow input.pcname{flex:0 0 108px;height:30px;font-size:12px;padding:0 8px;border:1px solid var(--line);border-radius:7px}
 .modal .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
-.tip{position:fixed;z-index:200;max-width:330px;background:var(--ink);color:#EFF5FA;padding:10px 13px;border-radius:9px;font-size:12px;line-height:1.7;white-space:pre-line;opacity:0;transform:translateY(3px);transition:opacity .1s,transform .1s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.24)}
+.tip{position:fixed;z-index:200;max-width:330px;background:var(--ink);color:#FBEFF4;padding:10px 13px;border-radius:9px;font-size:12px;line-height:1.7;white-space:pre-line;opacity:0;transform:translateY(3px);transition:opacity .1s,transform .1s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.24)}
 .tip.on{opacity:1;transform:none}
 .tip b{color:#fff}
 .tunerow{align-items:center;gap:10px;margin-bottom:7px}
@@ -750,7 +761,7 @@ body.ui-mobile #btnViewMode{padding:0 8px}
 .tunerow .tuneval{flex:1;text-align:right;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .tunerow .tunesw{flex:0 0 auto;width:16px;height:16px;border-radius:5px;border:1px solid var(--line);display:block}
 .addmenu{position:fixed;z-index:220;display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);
-  border-radius:10px;box-shadow:0 10px 28px rgba(20,40,60,.18);padding:5px;min-width:min(150px,calc(100vw - 24px))}
+  border-radius:10px;box-shadow:0 10px 28px rgba(60,25,42,.18);padding:5px;min-width:min(150px,calc(100vw - 24px))}
 .addmenu button{border:none;background:none;text-align:left;padding:8px 11px;border-radius:7px;font-size:12.5px;color:var(--ink2);cursor:pointer}
 .addmenu button:hover{background:var(--accent-soft);color:var(--accent-text)}
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,14px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:.22s;z-index:80;box-shadow:0 10px 30px rgba(0,0,0,.25)}
@@ -957,21 +968,23 @@ body.ui-mobile .blk textarea{font-size:16px}
           <details class="sec" data-sec="marks">
           <summary><span class="sec-t">지문 규칙</span><span class="sec-d">어떤 기호 사이를 지문·대사로 읽을지 직접 정하고, 한 줄에 섞였을 때 나눌지.</span></summary>
           <div class="sec-body">
+          <div class="mklbl">대표 기호 <span>누르면 켜지고, 다시 누르면 꺼집니다</span></div>
+          <div class="mkquick" id="mkQuick">
+            <button class="mkchip act" data-mkq="( ) action"><b>( )</b><i>지문</i></button>
+            <button class="mkchip act" data-mkq="* * action"><b>* *</b><i>지문</i></button>
+            <button class="mkchip act" data-mkq="[ ] action"><b>[ ]</b><i>지문</i></button>
+            <button class="mkchip act" data-mkq="(( )) action"><b>(( ))</b><i>지문</i></button>
+            <button class="mkchip talk" data-mkq="&quot; &quot; talk"><b>" "</b><i>대사</i></button>
+            <button class="mkchip talk" data-mkq="「 」 talk"><b>「 」</b><i>대사</i></button>
+            <button class="mkchip talk" data-mkq="『 』 talk"><b>『 』</b><i>대사</i></button>
+          </div>
+          <div class="mklbl">직접 규칙 <span>원하는 기호를 직접 적습니다</span></div>
           <p class="hint">여는 기호와 닫는 기호를 적고, 그 사이를 <b>지문</b>으로 볼지 <b>대사</b>로 볼지 고릅니다.<br>
-          · 두 기호가 같아도 됩니다. 예: <code>*</code> ~ <code>*</code><br>
-          · 여러 글자도 됩니다. 예: <code>((</code> ~ <code>))</code><br>
+          · 두 기호가 같아도 됩니다. 예: <code>~</code> ~ <code>~</code><br>
+          · 여러 글자도 됩니다. 예: <code>&lt;&lt;</code> ~ <code>&gt;&gt;</code><br>
           · <b>기호 표시</b>를 끄면 그림에는 안의 글만 남습니다.</p>
           <div id="mkRules" class="mkrules"></div>
-          <div class="mkadd">
-            <button class="btn sm" id="mkAdd">+ 규칙 추가</button>
-            <span class="mkquick" id="mkQuick">
-              <button class="mini wide" data-mkq="( ) action">( )</button>
-              <button class="mini wide" data-mkq="[ ] action">[ ]</button>
-              <button class="mini wide" data-mkq="* * action">* *</button>
-              <button class="mini wide" data-mkq="&quot; &quot; talk">" "</button>
-              <button class="mini wide" data-mkq="「 」 talk">「 」</button>
-            </span>
-          </div>
+          <button class="btn sm mkaddbtn" id="mkAdd">+ 직접 규칙 추가</button>
           <div class="field" style="margin-top:12px">
             <label>기호 밖의 나머지 글</label>
             <select id="mkRest">
@@ -1429,7 +1442,7 @@ body.ui-mobile .blk textarea{font-size:16px}
           <span class="zval" id="zVal">100%</span>
           <button class="zbtn" id="zIn" title="확대">+</button>
           <button class="btn sm ghost" id="zFit">맞춤</button>
-          <label class="matpick" data-tip="미리보기 뒷판 색을 바꿉니다. 저장되는 이미지에는 영향이 없습니다."><input type="color" id="matColor" value="#43647F"></label>
+          <label class="matpick" data-tip="미리보기 뒷판 색을 바꿉니다. 저장되는 이미지에는 영향이 없습니다."><input type="color" id="matColor" value="#7A5468"></label>
         </div>
       </div>
     </section>
@@ -4484,7 +4497,8 @@ function renderMarkRules(){
   const list = $('#mkRules');
   const rules = state.marks.rules || [];
   if (!rules.length){
-    list.innerHTML = '<div class="empty">규칙이 없습니다. 모든 글을 대사로 읽습니다.<br>아래에서 규칙을 추가하세요.</div>';
+    list.innerHTML = '<div class="empty">규칙이 없습니다. 모든 글을 대사로 읽습니다.<br>위의 대표 기호를 누르거나 직접 추가하세요.</div>';
+    syncQuick();
     return;
   }
   const opt = (v, l, cur) => '<option value="' + v + '"' + (cur === v ? ' selected' : '') + '>' + l + '</option>';
@@ -4497,6 +4511,15 @@ function renderMarkRules(){
       '<label class="mkshow" title="그림에 기호도 남길지"><input type="checkbox" data-mks="' + i + '"' + (r.show ? ' checked' : '') + '> 기호 표시</label>' +
       '<button class="mini danger" data-mkdel="' + i + '" title="규칙 삭제">✕</button>' +
     '</div>').join('');
+  syncQuick();
+}
+/* 대표 기호 버튼은 같은 기호의 규칙이 있으면 켜진 모양으로 */
+function syncQuick(){
+  const rules = state.marks.rules || [];
+  $$('#mkQuick [data-mkq]').forEach(b => {
+    const [open, close] = b.dataset.mkq.split(' ');
+    b.setAttribute('aria-pressed', rules.some(r => r.open === open && r.close === close) ? 'true' : 'false');
+  });
 }
 function addMarkRule(open, close, kind){
   snapshot();
@@ -4507,13 +4530,14 @@ $('#mkAdd').addEventListener('click', () => addMarkRule('', '', 'action'));
 $('#mkQuick').addEventListener('click', e => {
   const b = e.target.closest('[data-mkq]'); if (!b) return;
   const [open, close, kind] = b.dataset.mkq.split(' ');
-  if (state.marks.rules.some(r => r.open === open && r.close === close)){ toast('이미 있는 규칙입니다'); return; }
+  const at = state.marks.rules.findIndex(r => r.open === open && r.close === close);
+  if (at >= 0){ snapshot(); state.marks.rules.splice(at, 1); renderMarkRules(); renderCanvas(); return; }
   addMarkRule(open, close, kind);
 });
 $('#mkRules').addEventListener('input', e => {
   const t = e.target, rules = state.marks.rules;
-  if (t.dataset.mko != null){ snapshotSoon(); rules[t.dataset.mko].open = t.value; renderCanvas(); }
-  else if (t.dataset.mkc != null){ snapshotSoon(); rules[t.dataset.mkc].close = t.value; renderCanvas(); }
+  if (t.dataset.mko != null){ snapshotSoon(); rules[t.dataset.mko].open = t.value; syncQuick(); renderCanvas(); }
+  else if (t.dataset.mkc != null){ snapshotSoon(); rules[t.dataset.mkc].close = t.value; syncQuick(); renderCanvas(); }
 });
 $('#mkRules').addEventListener('change', e => {
   const t = e.target, rules = state.marks.rules;
@@ -5830,7 +5854,7 @@ splitEl.addEventListener('pointermove', e => {
 splitEl.addEventListener('dblclick', () => setCollapsed(!collapsed));
 
 /* ---------------- 미리보기 뒷판 색 ---------------- */
-let matColor = '#43647F';
+let matColor = '#7A5468';
 function shade(hex, amt){
   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
   if (!m) return hex;
@@ -5842,13 +5866,13 @@ function shade(hex, amt){
   return '#' + ch(1) + ch(2) + ch(3);
 }
 function setMat(hex){
-  matColor = hex || '#43647F';
+  matColor = hex || '#7A5468';
   const dark = luma(matColor) < .55;
   const r = document.documentElement.style;
   r.setProperty('--mat', matColor);
   r.setProperty('--mat2', shade(matColor, dark ? .13 : -.07));
-  r.setProperty('--mat-ink', dark ? '#EDF5FB' : '#22303D');
-  r.setProperty('--mat-ink2', dark ? 'rgba(237,245,251,.72)' : 'rgba(34,48,61,.62)');
+  r.setProperty('--mat-ink', dark ? '#FBEFF4' : '#3B2A33');
+  r.setProperty('--mat-ink2', dark ? 'rgba(251,239,244,.72)' : 'rgba(59,42,51,.62)');
   r.setProperty('--mat-line', dark ? 'rgba(255,255,255,.16)' : 'rgba(0,0,0,.14)');
   r.setProperty('--mat-hover', dark ? 'rgba(255,255,255,.13)' : 'rgba(0,0,0,.07)');
   r.setProperty('--mat-thumb', dark ? 'rgba(255,255,255,.28)' : 'rgba(0,0,0,.22)');
@@ -6058,7 +6082,8 @@ renderCanvas = function(){ _renderCanvas(); autosave(); };
   } catch(e){}
   let savedMat = null;
   try { savedMat = localStorage.getItem('rpFormatter.mat'); } catch(e){}
-  setMat(savedMat || '#43647F');
+  /* 예전 기본 뒷판(파랑)은 새 기본 색으로 바꾼다 */
+  setMat(savedMat && savedMat.toUpperCase() !== '#43647F' ? savedMat : '#7A5468');
   let savedUi = null;
   try { savedUi = localStorage.getItem('rpFormatter.ui'); } catch(e){}
   setUiMode(savedUi || (window.innerWidth < 860 ? 'mobile' : 'desktop'), true);
