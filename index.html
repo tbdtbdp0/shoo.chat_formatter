@@ -386,7 +386,6 @@ body.ui-mobile #btnViewMode{padding:0 8px}
 .act{text-indent:0}
 .pspace{height:.5em}
 .act{opacity:.95}
-.mode-line .act,.mode-quote .act{font-style:italic}
 .cimg{display:block;max-width:100%;margin-top:.5em;border-radius:.5em}
 .crow.right .cimg{margin-left:auto}
 .page.ta-center .cimg{margin-left:auto;margin-right:auto}
@@ -450,7 +449,7 @@ body.ui-mobile #btnViewMode{padding:0 8px}
 .mode-quote .crow.orn-thin .qbox{border-left-width:1px}
 .mode-quote .crow.orn-none .qbox{border-left:none;padding-left:1.3em}
 .mode-quote .crow.orn-mark .qbox{border-left:none;padding-left:0}
-.mode-quote .out{margin:0;font-style:italic;opacity:.95}
+.mode-quote .out{margin:0;opacity:.95}
 .mode-quote .qmark{display:block;font-size:2.1em;line-height:.85;opacity:.3;margin-bottom:-.3em}
 .mode-quote .attrib{margin-top:.65em;font-size:.82em;letter-spacing:.04em;opacity:.85;text-align:right;width:var(--c-bw);max-width:100%}
 .mode-quote .crow.narr .qbox{border-left:none;padding-left:0;width:100%}
@@ -463,12 +462,10 @@ body.ui-mobile #btnViewMode{padding:0 8px}
 .mode-mixed .bubble{display:inline-block;max-width:100%;text-align:left}
 .mode-mixed .stack{display:flex;flex-direction:column;gap:.4em;align-items:flex-start}
 .mode-mixed .crow.right .stack{align-items:flex-end}
-.mode-mixed .out{margin:0;font-style:italic;padding:0 .2em}
+.mode-mixed .out{margin:0;padding:0 .2em}
 .page.ta-center.mode-mixed .stack,.page.ta-center.mode-mixed .cbody-col{align-items:center}
 .page.ta-right.mode-mixed .stack,.page.ta-right.mode-mixed .cbody-col{align-items:flex-end}
 .mode-line .crow.narr,.mode-quote .crow.narr{align-self:center!important;max-width:88%;text-align:center}
-/* 화자별 지문 자동 기울임 끄기 — 나레이션은 자기 설정(.yi/.ni)을 따르고, _기울임_ 서식은 그대로 */
-.noactit .act,.noactit .out{font-style:normal}
 
 /* dividers */
 .cdiv{display:flex;align-items:center;justify-content:center;gap:.7em;margin:.2em auto;width:100%}
@@ -1737,7 +1734,6 @@ const DEFAULT_STATE = () => ({
   frameChoiceText: '그에게 다가간다\n그냥 지나친다',
   marks: { rules:[], rest:'auto' },
   actionMode: 'inline',
-  actionItalic: true,
   ratio: 'auto', ratioW: 2, ratioH: 3,
   usePageNo: false, useDocTitle: false, useStamp: false,
   pageNo: 'num', pageNoPos: 'bc', pageNoColor: '#8A8A8E', pageNoSize: 12,
@@ -2054,11 +2050,6 @@ function tailHtml(){
 /* 예전 기본값 92%를 새 기본값 100%로 올린다. 일부러 고른 다른 값은 두고 92만 옮긴다 */
 function migrateNarrSize(nr){ if (nr && Number(nr.size) === 92) nr.size = 100; return nr; }
 /* 화자별 대사 크기. 예전 설정 파일에는 없으므로 100%로 본다 */
-/* 화자별 지문 기울임. 따로 정하지 않은 화자는 예전 전체 설정(actionItalic)을 따른다 */
-function spActItalic(sp){
-  if (sp && sp.actItalic != null) return sp.actItalic !== false;
-  return state.actionItalic !== false;
-}
 function spSize(sp){ return clamp(Number(sp && sp.size) || 100, 60, 160); }
 function bubAlpha(sp){
   if (sp.bubbleAlpha != null) return clamp(Number(sp.bubbleAlpha), 0, 100);
@@ -2155,8 +2146,7 @@ function buildRow(bk){
   }
 
   const side = ['left','center','right','wide'].indexOf(sp.align) >= 0 ? sp.align : 'left';
-  row.className = 'crow ' + side + (bk.image && bk.imgAlign === 'full' ? ' imgfull' : '') +
-    (spActItalic(sp) ? '' : ' noactit');
+  row.className = 'crow ' + side + (bk.image && bk.imgAlign === 'full' ? ' imgfull' : '');
   row.style.fontSize = (spSize(sp) / 100) + 'em';
   paintBox();
   const nameColor = sp.nameColor || sp.text;
@@ -3135,8 +3125,7 @@ function renderCast(){
           '</select></div>' +
         '<div class="field" style="margin:0"><label>프로필 크기</label>' +
           '<div class="rangerow" style="margin:0"><input type="range" min="60" max="300" value="' + (sp.avatarSize || 100) + '" data-avsz="' + sp.id + '"><output>' + (sp.avatarSize || 100) + '%</output></div></div>' +
-      '</div>' +
-      '<label class="check" style="margin:9px 0 0" title="글줄·인용구·서적＋풍선에서 지문을 저절로 기울입니다. 꺼도 _기울임_ 서식은 남습니다."><input type="checkbox" data-spit="' + sp.id + '"' + (spActItalic(sp) ? ' checked' : '') + '> 지문 기울임</label>';
+      '</div>';
     list.appendChild(card);
   });
   upgradeRangeRows(list);
@@ -3544,11 +3533,6 @@ $('#castList').addEventListener('input', e => {
     return;
   }
   if (el.dataset.nrc){ state.narrator[el.dataset.nrc] = el.value; renderCanvas(); return; }
-  if (el.dataset.spit){
-    const sp = speakerOf(el.dataset.spit);
-    if (sp){ snapshot(); sp.actItalic = el.checked; renderCanvas(); }
-    return;
-  }
   if (el.dataset.nr === 'size'){
     state.narrator.size = Number(el.value);
     const o = el.closest('.rangerow').querySelector('.numin, output'); if (o) o.value = el.value + '%';
@@ -5334,7 +5318,7 @@ function migrate(o){
       : {id:b.id || uid(), type:'line', speakerId:b.speakerId || '', text:b.text || '', image:b.image || null})
   };
 }
-const STYLE_KEYS = ['mode','theme','textAlign','hideNames','alignedText','wrapQuote','nameSep','quoteOrn','markColor','markAlpha','marks','actionMode','actionItalic',
+const STYLE_KEYS = ['mode','theme','textAlign','hideNames','alignedText','wrapQuote','nameSep','quoteOrn','markColor','markAlpha','marks','actionMode',
   'ratio','ratioW','ratioH','usePageNo','useDocTitle','useStamp','pageNo','pageNoPos','pageNoColor','pageNoSize',
   'docTitle','docTitleAlign','docTitleWhere','docTitleColor','docTitleSize','docTitleFont','docTitleDeco','docTitleEyebrow','docTitleLs',
   'stampText','stampPos','stampColor','stampSize','stampFont','bgKind','bgColor','bgColor2','bgImage','bgFit','bgUnder','bgFade','bgFadeSize','tint',
